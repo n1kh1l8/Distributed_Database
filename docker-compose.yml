@@ -1,0 +1,68 @@
+version: "3.9"
+services:
+  mongodb1:
+    container_name: mongodb1
+    hostname: mongodb1
+    image: mongo
+    ports:
+      - "7000:27017"
+    command: mongod --port 27017
+    volumes:
+      - ./data/mongodb1:/data/db
+  mongodb2:
+    container_name: mongodb2
+    hostname: mongodb2
+    image: mongo
+    ports:
+      - "7001:27017"
+    command: mongod --port 27017
+    volumes:
+      - ./data/mongodb2:/data/db
+  mongodb3:
+    container_name: mongodb3
+    hostname: mongodb3
+    image: mongo
+    ports:
+      - "7002:27017"
+    command: mongod --port 27017
+    volumes:
+      - ./data/mongodb3:/data/db
+  zk1:
+    container_name: zk1
+    hostname: zk1
+    image: bitnami/zookeeper:3.6.2
+    ports:
+      - 8000:2181
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+      - ZOO_SERVER_ID=1
+      - ZOO_SERVERS=0.0.0.0:2888:3888,zk2:2888:3888,zk3:2888:3888
+      - ZOO_4LW_COMMANDS_WHITELIST=*
+    volumes:
+      - ./data/zookeeper1:/data
+  zk2:
+    container_name: zk2
+    hostname: zk2
+    image: bitnami/zookeeper:3.6.2
+    ports:
+      - 8001:2181
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+      - ZOO_SERVER_ID=2
+      - ZOO_SERVERS=zk1:2888:3888,0.0.0.0:2888:3888,zk3:2888:3888
+      - ZOO_4LW_COMMANDS_WHITELIST=*
+    volumes:
+      - ./data/zookeeper2:/data
+  zk3:
+    container_name: zk3
+    hostname: zk3
+    image: bitnami/zookeeper:3.6.2
+    ports:
+      - 8002:2181
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+      - ZOO_SERVER_ID=3
+      - ZOO_SERVERS=zk1:2888:3888,zk2:2888:3888,0.0.0.0:2888:3888
+      - ZOO_4LW_COMMANDS_WHITELIST=*
+    volumes:
+      - ./data/zookeeper3:/data
